@@ -22,7 +22,9 @@ public enum GameClips
     _GunMachine,
     _Rocket_Fire,
     _Tank_Explosion,
-    _Zombie
+    _Zombie_1,
+    _Zombie_2,
+    _Zombie_3
 }
 
 public class AudioManager : MonoBehaviour
@@ -69,12 +71,12 @@ public class AudioManager : MonoBehaviour
         Play(clip.ToString());
     }
 
-    public void Stop((GameClips clip)
+    public void Stop(GameClips clip)
     {
         Stop(clip.ToString());
     }
 
-    public void Pause((GameClips clip, bool pause)
+    public void Pause(GameClips clip, bool pause)
     {
         Pause(clip.ToString(), pause);
     }

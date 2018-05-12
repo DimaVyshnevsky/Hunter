@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using DG.Tweening;
 
-public class MoverMissile : WeaponBase
+public class MoverMissile : WeaponBase, IPoolObj
 {  
     [SerializeField]
     private float Damping = 3f;
@@ -22,7 +22,7 @@ public class MoverMissile : WeaponBase
 
     private Tween tweenTimer;
     private Rigidbody rig;
-    private List<GameObject> enemyLists;
+    private List<IPoolObj> enemyList;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -49,15 +49,15 @@ public class MoverMissile : WeaponBase
 
         if (target)
         {
-            if (Vector3.Distance(transform.position, target.transform.position) < 0.2f)
+            if (Vector3.Distance(transform.position, target.position) < 0.2f)
             {
                 Explosion();
                 return;
             }
 
-            Quaternion rotation = Quaternion.LookRotation(target.transform.position - transform.position);
+            Quaternion rotation = Quaternion.LookRotation(target.position - transform.position);
             transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * Damping);
-            Vector3 dir = (target.transform.position - transform.position).normalized;
+            Vector3 dir = (target.position - transform.position).normalized;
             float direction = Vector3.Dot(dir, transform.forward);
 
             if (direction < TargetLockDirection)
@@ -67,26 +67,23 @@ public class MoverMissile : WeaponBase
         if (Seeker && !target)
         {
             float distance = int.MaxValue;
-            if (enemyLists.Count > 0)
+            if (enemyList.Count > 0)
             {
-                for (int i = 0; i < enemyLists.Count; i++)
+                for (int i = 0; i < enemyList.Count; i++)
                 {
-                    if (enemyLists[i])
+                    if (enemyList[i] != null)
                     {
-                        Vector3 dir = (enemyLists[i].transform.position - transform.position).normalized;
+                        Vector3 dir = (enemyList[i].GetGameObject().transform.position - transform.position).normalized;
                         float direction = Vector3.Dot(dir, transform.forward);
-                        float dis = Vector3.Distance(enemyLists[i].transform.position, transform.position);
+                        float dis = Vector3.Distance(enemyList[i].GetGameObject().transform.position, transform.position);
 
                         if (direction >= TargetLockDirection)
                         {
-                            //if (DistanceLock > dis)
-                            //{
-                                if (distance > dis)
-                                {
-                                    distance = dis;
-                                    target = enemyLists[i];
-                                }
-                            //}
+                            if (distance > dis)
+                            {
+                                distance = dis;
+                                target = enemyList[i].GetGameObject().transform;
+                            }
                         }
                     }
                 }
@@ -95,15 +92,19 @@ public class MoverMissile : WeaponBase
     }
 
     #region Interface
-    public override void Activate()
+
+    public  void Activate()
     {
         if (!init)
             Init();
 
+        if (enemyList == null)
+            enemyList = Factory.Instance.GetList("Enemy");
         effectsParticle.Stop();
         effectsParticle.Play();
         lightEffect.SetActive(true);
 
+        gameObject.SetActive(true);
         tweenTimer = DOVirtual.DelayedCall(LifeTime, () =>
         {
             Explosion();
@@ -112,7 +113,12 @@ public class MoverMissile : WeaponBase
         fire = true;
     }
 
-    public override void ResetObj()
+    public void Deactivate()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public void ResetObj()
     {
         if (!init)
             Init();
@@ -126,17 +132,20 @@ public class MoverMissile : WeaponBase
         Speed = startSpeed;
     }
 
-    public override void Init()
+    public void Init()
     {
         init = true;
         if (rig == null)
             rig = GetComponent<Rigidbody>();
         if (damage == null)
             damage = GetComponent<Damage>();
-        if (enemyLists == null)
-            enemyLists = Manager.Instance.GetEnemyLists();
         if (startSpeed == 0)
             startSpeed = Speed;
+    }
+
+    public GameObject GetGameObject()
+    {
+        return gameObject;
     }
 
     #endregion

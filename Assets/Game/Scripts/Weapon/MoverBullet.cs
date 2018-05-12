@@ -1,8 +1,9 @@
 using UnityEngine;
 using System.Collections;
 using DG.Tweening;
+using System;
 
-public class MoverBullet : WeaponBase
+public class MoverBullet : WeaponBase, IPoolObj
 {
     [SerializeField]
     private float LifeDistanse = 20;
@@ -18,7 +19,8 @@ public class MoverBullet : WeaponBase
         if (Vector3.Distance(startPosition, transform.position) > LifeDistanse)
         {
             ResetObj();
-            gameObject.SetActive(false);
+            Deactivate();
+            return;
         }
 
         if (Speed < SpeedMax)      
@@ -27,7 +29,7 @@ public class MoverBullet : WeaponBase
 
     #region Interface
 
-    public override void Init()
+    public void Init()
     {
         init = true;
         if (!damage)
@@ -36,22 +38,32 @@ public class MoverBullet : WeaponBase
             startSpeed = Speed;
     }
 
-    public override void Activate()
+    public void Activate()
     {
         if (!init)
             Init();
-        gameObject.SetActive(true);      
         startPosition = transform.position;
         direction = transform.forward;
+        gameObject.SetActive(true);      
         fire = true;
     }
 
-    public override void ResetObj()
+    public void Deactivate()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public void ResetObj()
     {
         if (!init)
             Init();
         fire = false;
         Speed = startSpeed;
+    }
+
+    public GameObject GetGameObject()
+    {
+        return gameObject;
     }
 
     #endregion

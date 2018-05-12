@@ -147,7 +147,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -82.98, y: -62.670135}
+  m_AnchoredPosition: {x: -82.98047, y: -62.670135}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &11958034
@@ -5860,7 +5860,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 189.7207, y: -62.670044}
+  m_AnchoredPosition: {x: 189.71875, y: -62.670044}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &399125264
@@ -7310,7 +7310,17 @@ MonoBehaviour:
     name: 
     clip: {fileID: 8300000, guid: 0473fb0c1ee8c4147b4ed64d23c71963, type: 3}
     loop: 0
-    volume: 0.5
+    volume: 0.2
+  - source: {fileID: 0}
+    name: 
+    clip: {fileID: 8300000, guid: d2f3d6fc290972440b964aad2b57373c, type: 3}
+    loop: 0
+    volume: 0.2
+  - source: {fileID: 0}
+    name: 
+    clip: {fileID: 8300000, guid: a0ab9c3cab9dc1148929acc019725309, type: 3}
+    loop: 0
+    volume: 0.2
 --- !u!1 &577456552
 GameObject:
   m_ObjectHideFlags: 0
@@ -7801,7 +7811,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentWeaponType: 0
-  bullet: {fileID: 11400000, guid: 50cd6b4c96f60604db1b0412c4cdc9ca, type: 2}
+  bulletPref: {fileID: 11400000, guid: 50cd6b4c96f60604db1b0412c4cdc9ca, type: 2}
   spawnPoint: {fileID: 0}
   delay: 0.1
   quantityObjsInPool: 10
@@ -7937,11 +7947,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentWeaponType: 1
-  bullet: {fileID: 11400000, guid: d30c04b22a61d0347959a86aef3b5ac3, type: 2}
+  bulletPref: {fileID: 11400000, guid: d30c04b22a61d0347959a86aef3b5ac3, type: 2}
   spawnPoint: {fileID: 1128813407}
   delay: 3
   quantityObjsInPool: 5
-  explosionEffect: {fileID: 100000, guid: 0c05761968e175f4ea049c7859dd3481, type: 2}
+  explosionEffectPref: {fileID: 100000, guid: 0c05761968e175f4ea049c7859dd3481, type: 2}
 --- !u!1 &758804350
 GameObject:
   m_ObjectHideFlags: 0
@@ -8895,11 +8905,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentWeaponType: 1
-  bullet: {fileID: 11400000, guid: a77079a5a46c9c54dbcf7d76b320a1f0, type: 2}
+  bulletPref: {fileID: 11400000, guid: a77079a5a46c9c54dbcf7d76b320a1f0, type: 2}
   spawnPoint: {fileID: 1128813407}
   delay: 5
   quantityObjsInPool: 5
-  explosionEffect: {fileID: 100000, guid: 0c05761968e175f4ea049c7859dd3481, type: 2}
+  explosionEffectPref: {fileID: 100000, guid: 0c05761968e175f4ea049c7859dd3481, type: 2}
 --- !u!4 &894434715
 Transform:
   m_ObjectHideFlags: 0
@@ -15651,6 +15661,7 @@ GameObject:
   - component: {fileID: 1391056264}
   - component: {fileID: 1391056263}
   - component: {fileID: 1391056260}
+  - component: {fileID: 1391056261}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -15665,6 +15676,18 @@ AudioListener:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1391056259}
   m_Enabled: 1
+--- !u!114 &1391056261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1391056259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff26db721962cdf4a8edcdfa9a767d2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  profile: {fileID: 11400000, guid: 5826c7a3a076f3e4fb8ca76ebc721395, type: 2}
 --- !u!20 &1391056263
 Camera:
   m_ObjectHideFlags: 0
@@ -15690,12 +15713,12 @@ Camera:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_RenderingPath: -1
+  m_RenderingPath: 1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
-  m_AllowMSAA: 1
+  m_AllowMSAA: 0
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1

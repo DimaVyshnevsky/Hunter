@@ -12,11 +12,17 @@ public class Gun_Machine : FireSystem
     [SerializeField]
     private float radiusSeeker = 10f;
 
-    private List<GameObject> enemyList;
-    private Transform target;
-    private Tween tween;
+    private IPoolObj currentBullet;
+    private List<IPoolObj> enemyList;
     private bool readyForNextShot = true;
     private int step = 3;
+
+    private void Start()
+    {
+        List<IPoolObj> list = Factory.Instance.CreatePool<MoverBullet>(bulletPref.GetType().ToString(), bulletPref.gameObject, quantityObjsInPool);
+        foreach (var item in list)
+            item.Init();
+    }
 
     void FixedUpdate()
     {
@@ -45,16 +51,12 @@ public class Gun_Machine : FireSystem
         {
             if (hit.transform.tag.Equals("Enemy"))
             {
-                bullet.gameObject.SetActive(false);
-                hit.transform.GetComponent<Enemy>().MakeDamage(bullet.GetComponent<Damage>()._Damage);        
-                //print("Hit");
+                if(currentBullet != null)
+                    currentBullet.Deactivate();
+                hit.transform.GetComponent<Enemy>().MakeDamage(bulletPref.GetComponent<Damage>()._Damage);        
             }
         }
-        //else
-        //{
-            //Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 1000, Color.white);
-            //print("Missed");
-        //}
+
         attack = false;
     }
 
@@ -65,10 +67,9 @@ public class Gun_Machine : FireSystem
 
         AudioManager.Instance.Play(GameClips._GunMachine);
         readyForNextShot = false;
-        GameObject bullet = PrepareNewBullet();
-        MoverBullet obj = bullet.GetComponent<MoverBullet>();
-        obj.ResetObj();
-        obj.Activate();
+        currentBullet = PrepareNewBullet<MoverBullet>();
+        currentBullet.ResetObj();
+        currentBullet.Activate();
         attack = true;     
         Invoke("CheckForReady", delay);
     }
@@ -81,13 +82,13 @@ public class Gun_Machine : FireSystem
     private Transform FindEnemy()
     {
         if (enemyList == null)
-            enemyList = Manager.Instance.GetEnemyLists();
+            enemyList = Factory.Instance.GetList("Enemy");
 
-        enemyList.Sort(delegate (GameObject obj_1, GameObject obj_2)
-        { return Vector3.Distance(obj_1.transform.position, Player.PlayerTransform.position)
-            .CompareTo(Vector3.Distance(obj_2.transform.position, Player.PlayerTransform.position)); });
-        if(Vector3.Distance(enemyList[0].transform.position, transform.position) < radiusSeeker)
-            return enemyList[0].transform;
+        enemyList.Sort(delegate (IPoolObj obj_1, IPoolObj obj_2)
+        { return Vector3.Distance(obj_1.GetGameObject().transform.position, Player.PlayerTransform.position)
+            .CompareTo(Vector3.Distance(obj_2.GetGameObject().transform.position, Player.PlayerTransform.position)); });
+        if(Vector3.Distance(enemyList[0].GetGameObject().transform.position, transform.position) < radiusSeeker)
+            return enemyList[0].GetGameObject().transform;
         return null;
     } 
 }

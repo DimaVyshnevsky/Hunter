@@ -13,14 +13,15 @@ public class FireSystem: MonoBehaviour
     [SerializeField]
     protected WeaponsType currentWeaponType;
     [SerializeField]
-    protected WeaponBase bullet;
+    protected WeaponBase bulletPref;
     [SerializeField]
     protected Transform spawnPoint;
     [SerializeField]
     protected float delay = 1;
     [SerializeField]
     protected int quantityObjsInPool = 10;
-   
+
+    protected Transform target;
     protected bool attack;
     protected bool activate;
 
@@ -39,28 +40,11 @@ public class FireSystem: MonoBehaviour
 
         if (spawnPoint == null)
             spawnPoint = transform;
-        bullet.gameObject.SetActive(false);
-    }
-
-    protected virtual void Start()
-    {
-        Factory.Instance.CreatePool(bullet.GetType().ToString(), bullet.gameObject, quantityObjsInPool);
     }
 
     public virtual void Fire()
     {
-        GameObject temp = PrepareNewBullet();
-
-        if (!temp)
-        {
-            print("no bullet!");
-            return;
-        }
-
-        WeaponBase obj = temp.GetComponent<WeaponBase>();
-        obj.ResetObj();
-        temp.SetActive(true);
-        obj.Activate(); 
+        print("Fire!"); 
     }
 
     public virtual void ActivateFireSystem(bool activate)
@@ -68,13 +52,16 @@ public class FireSystem: MonoBehaviour
         this.activate = activate;
     }
 
-    protected virtual GameObject PrepareNewBullet()
+    protected virtual IPoolObj PrepareNewBullet<T>() where T: IPoolObj
     {
-        GameObject temp = Factory.Instance.GetObject(bullet.GetType().ToString());
-        if (!temp)
+        IPoolObj temp = Factory.Instance.GetObject<T>(bulletPref.GetType().ToString());
+        if (temp == null)
+        {
+            print("no bullet!");
             return null;
-        temp.transform.position = spawnPoint.transform.position;
-        temp.transform.rotation = transform.rotation;
+        }
+        temp.GetGameObject().transform.position = spawnPoint.transform.position;
+        temp.GetGameObject().transform.rotation = transform.rotation;
         return temp;
     }  
 }

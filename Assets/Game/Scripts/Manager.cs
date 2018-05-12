@@ -28,7 +28,7 @@ public class Manager : MonoBehaviour
     //private delegate void GetEnemyDelegate();
     //private List<GetEnemyDelegate> listMethods = new List<GetEnemyDelegate>();
     private GameState currentGameState;
-    private List<GameObject> listEnemy;
+    private List<Enemy> listEnemy = new List<Enemy>();
     private int quantityMissedExecution;
 
     private static Manager instance;
@@ -50,23 +50,25 @@ public class Manager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance == null)        
-            instance = this;    
-            DG.Tweening.DOTween.Init ( false, true, DG.Tweening.LogBehaviour.Verbose ).SetCapacity ( 200, 10 );
-        DOVirtual.DelayedCall(Random.Range(2, 7), () =>
+        if (instance == null)
+            instance = this;
+        else
+            return;
+        DG.Tweening.DOTween.Init ( false, true, DG.Tweening.LogBehaviour.Verbose ).SetCapacity ( 200, 10 );
+        DOVirtual.DelayedCall(Random.Range(7, 15), () =>
         {
-            AudioManager.Instance.Play(GameClips._Zombie);
+            AudioManager.Instance.Play("_Zombie_" + Random.Range(1, 4));
         }).SetLoops(-1, LoopType.Restart);
     }
 
     private void OnEnable()
     {
-        Base_Behavior.DeadEvent += DeadHandler;
+        Hunter_Base.DeadEvent += DeadHandler;
     }
 
     private void OnDisable()
     {
-        Base_Behavior.DeadEvent -= DeadHandler;
+        Hunter_Base.DeadEvent -= DeadHandler;
     }
 
     private void Start()
@@ -74,20 +76,16 @@ public class Manager : MonoBehaviour
         currentGameState = GameState.game;
         if (enemyPrefs != null && enemyPrefs.Length > 0)
         {
-            listEnemy = Factory.Instance.CreatePool("Enemy", enemyPrefs, quantityEnemiesInScene);
+            List<IPoolObj> list = Factory.Instance.CreatePool<Enemy>("Enemy", enemyPrefs, quantityEnemiesInScene);
+            foreach (var item in list)         
+                item.Init();
+            foreach (var item in listEnemy)
+                listEnemy.Add(item as Enemy);
+            
             IEnumerator temp = GetGroupOfEnemies(quantityEnemiesInScene);
             StartCoroutine(temp);
         }
     }
-
-    #region Interface
-
-    public List<GameObject> GetEnemyLists()
-    {
-        return listEnemy;
-    }
-
-    #endregion
 
     #region Handlers
 
@@ -95,13 +93,11 @@ public class Manager : MonoBehaviour
     {
         if (currentGameState == GameState.pause)
         {
-            if (tag == "Enemy")
-            {
+            if (tag == "Enemy")           
                 quantityMissedExecution++;
-                //GetEnemyDelegate temp = GetEnemy;
-                //listMethods.Add(temp);
-            }
             return;
+                //GetEnemyDelegate temp = GetEnemy;
+                //listMethods.Add(temp);      
         }
 
         switch (tag)
@@ -129,13 +125,11 @@ public class Manager : MonoBehaviour
     {
         currentGameState = GameState.game;
         continueButton.interactable = false;
-        Player.Instance.ResetObj();
+        Player.Instance.Restart();
         DOVirtual.DelayedCall(2, ()=> 
         {
             foreach (var item in listEnemy)
-            {
-                item.GetComponent<Enemy>().SetState(Base_Behavior.State.hunting);
-            }
+                item.SetState(Hunter_Base.State.hunting);            
         });
 
         if (quantityMissedExecution > 0)
@@ -162,12 +156,12 @@ public class Manager : MonoBehaviour
 
     private void GetEnemy()
     {
-        GameObject enemy = Factory.Instance.GetObject("Enemy");
+        IPoolObj enemy = Factory.Instance.GetObject<Enemy>("Enemy");
         if (enemy != null)
         {
-            enemy.transform.position = spawnPoints[Random.Range(0, spawnPoints.Length)].position;
-            enemy.SetActive(true);
-            enemy.GetComponent<Enemy>().ResetObj();
+            enemy.GetGameObject().transform.position = spawnPoints[Random.Range(0, spawnPoints.Length)].position;
+            enemy.ResetObj();
+            enemy.Activate();
         }
     }
 
@@ -176,9 +170,7 @@ public class Manager : MonoBehaviour
         currentGameState = GameState.pause;
         continueButton.interactable = true;
         foreach (var item in listEnemy)
-        {
-            item.GetComponent<Enemy>().SetState(Base_Behavior.State.waiting);
-        }
+            item.SetState(Hunter_Base.State.waiting);
     }
 
     IEnumerator GetGroupOfEnemies(int quantity)

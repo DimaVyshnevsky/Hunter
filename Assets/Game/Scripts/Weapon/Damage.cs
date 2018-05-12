@@ -33,9 +33,9 @@ public class Damage : MonoBehaviour
     {
         if (explosionEffect)
         {
-            GameObject obj = Factory.Instance.GetObject(explosionEffect.name);
-            obj.transform.position = transform.position;
-            obj.SetActive(true);
+            IPoolObj obj = Factory.Instance.GetObject<Explosion>(explosionEffect.name);
+            obj.GetGameObject().transform.position = transform.position;
+            obj.Activate();
         }
     }
 

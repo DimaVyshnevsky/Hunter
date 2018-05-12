@@ -5,17 +5,31 @@ using UnityEngine;
 public class Launcher : FireSystem
 {
     [SerializeField]
-    private GameObject explosionEffect;
+    private GameObject explosionEffectPref;
 
-    protected override void Start()
+    private void Start()
     {
-        base.Start();
-        Factory.Instance.CreatePool(explosionEffect.name, explosionEffect, quantityObjsInPool);
+        List<IPoolObj> list = Factory.Instance.CreatePool<MoverMissile>(bulletPref.GetType().ToString(), bulletPref.gameObject, quantityObjsInPool);
+        foreach (var item in list)
+            item.Init();
+        list = Factory.Instance.CreatePool<Explosion>(explosionEffectPref.name, explosionEffectPref, quantityObjsInPool);
+        foreach (var item in list)
+            item.Init();
     }
 
     public override void Fire()
     {
         AudioManager.Instance.Play(GameClips._Rocket_Fire);
-        base.Fire();
+
+        IPoolObj bullet = PrepareNewBullet<MoverMissile>();
+
+        if (!bullet.GetGameObject())
+        {
+            print("no bullet!");
+            return;
+        }
+
+        bullet.ResetObj();
+        bullet.Activate();
     }
 }

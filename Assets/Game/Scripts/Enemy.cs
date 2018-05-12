@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using DG.Tweening;
 
-public class Enemy : Base_Behavior
+public class Enemy : Hunter_Base, IPoolObj
 {
     [SerializeField]
     private float attack_disctance = 2;
@@ -16,13 +16,6 @@ public class Enemy : Base_Behavior
     private Tween tweenDieing;
 
     public static System.Action<float> MakeDamageEvent;
-
-    private void Awake()
-    {
-        agent = GetComponent<NavMeshAgent>();
-        anim = GetComponent<Animator>();
-        rig = GetComponent<Rigidbody>();
-    }
 
     protected override void OnEnable()
     {
@@ -52,11 +45,11 @@ public class Enemy : Base_Behavior
 
     #region Interface
 
-    public override void ResetObj()
+    public override void Restart()
     {
         rig.detectCollisions = true;
         healthBar.gameObject.SetActive(true);
-        base.ResetObj();
+        base.Restart();
     }
 
     public override void SetState(State state)
@@ -83,14 +76,43 @@ public class Enemy : Base_Behavior
                 Attack();
                 break;
         }
-        currentState = state;
+
+        base.SetState(state);
+    }
+
+    public void Init()
+    {
+        agent = GetComponent<NavMeshAgent>();
+        anim = GetComponent<Animator>();
+        rig = GetComponent<Rigidbody>();
+    }
+
+    public void Activate()
+    {
+        gameObject.SetActive(true);
+    }
+
+    public void Deactivate()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public void ResetObj()
+    {
+        Restart();
+        SetState(State.hunting);
+    }
+
+    public GameObject GetGameObject()
+    {
+        return gameObject;
     }
 
     #endregion
 
     #region States
 
-    protected override void Attack()
+    protected  void Attack()
     {
         if (tweenDieing != null && tweenDieing.IsActive())
             return;
@@ -98,7 +120,7 @@ public class Enemy : Base_Behavior
         tweenDamage = DOVirtual.DelayedCall(0.5f, MakingDamage).SetLoops(-1, LoopType.Restart);
     }
 
-    public override void Die()
+    public  void Die()
     {
         anim.SetTrigger(State.dead.ToString());
         rig.detectCollisions = false;
@@ -107,22 +129,21 @@ public class Enemy : Base_Behavior
         tweenDieing = DOVirtual.DelayedCall(4, () =>
         {
             tweenDieing = null;
-            base.Die();
+            gameObject.SetActive(false);
+            if (DeadEvent != null)
+                DeadEvent(gameObject.tag);
         });
     }
 
-    protected override void Hunting()
+    protected  void Hunting()
     {
-        if (tweenDieing != null && tweenDieing.IsActive())
-        {
-            print("?");
+        if (tweenDieing != null && tweenDieing.IsActive())       
             return;
 
-        }
         anim.SetTrigger(State.hunting.ToString());
     }
 
-    protected override void Waiting()
+    protected  void Waiting()
     {
         if (tweenDieing != null && tweenDieing.IsActive())
             return;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : Base_Behavior
+public class Player : Hunter_Base
 {
     [Header("-----Movement-----")]
     [SerializeField]
@@ -26,6 +26,7 @@ public class Player : Base_Behavior
     private float MovementInputValue;
     private float TurnInputValue;
     private int index;
+    private bool movement;
 
     private static Transform playerTransform;
     public static Transform PlayerTransform
@@ -56,7 +57,7 @@ public class Player : Base_Behavior
         if (fireSystems != null && fireSystems.Length > 0)
             currentFireSystem = fireSystems[0];
         currentFireSystem.ActivateFireSystem(true);
-        ResetObj();
+        Restart();
     }
 
     protected override void OnEnable()
@@ -72,12 +73,18 @@ public class Player : Base_Behavior
         Enemy.MakeDamageEvent -= MakeDamage;
     }
 
+    private void Start()
+    {
+        AudioManager.Instance.Play(GameClips._EngineIdle);
+    }
+
     private void Update()
     {
         if (currentState == State.dead)
             return;
         MovementInputValue = Input.GetAxis("Vertical");
         TurnInputValue = Input.GetAxis("Horizontal");
+        SetEngineSound(MovementInputValue, TurnInputValue);
 
         if (Input.GetKeyDown(KeyCode.X))
             Attack(0);
@@ -103,12 +110,12 @@ public class Player : Base_Behavior
 
     #region Interface
 
-    public override void ResetObj()
+    public override void Restart()
     {
         fire.Stop();
         exposion.SetActive(false);
         fireLight.SetActive(false);
-        base.ResetObj();
+        base.Restart();
     }
 
     #endregion
@@ -130,7 +137,7 @@ public class Player : Base_Behavior
             currentFireSystem.Fire();
     }
 
-    public override void Die()
+    public void Die()
     {
         AudioManager.Instance.Play(GameClips._Tank_Explosion);
         if (exposion && fire && fireLight)
@@ -192,6 +199,31 @@ public class Player : Base_Behavior
                 currentFireSystem = fireSystems[index];
         }
         currentFireSystem.ActivateFireSystem(true);
+    }
+
+    private void SetEngineSound(float input_1, float input_2)
+    {
+        bool movement = false;
+
+        if (input_1 > 0 || input_2 > 0)
+            movement = true;
+        else
+            movement = false;
+
+        if (this.movement == movement)
+            return;
+        print(movement);
+        if (movement)
+        {
+            AudioManager.Instance.Pause(GameClips._EngineIdle, true);
+            AudioManager.Instance.Play(GameClips._EngineDriving);
+        }
+        else
+        {
+            AudioManager.Instance.Pause(GameClips._EngineDriving, true);
+            AudioManager.Instance.Play(GameClips._EngineIdle);
+        }         
+        this.movement = !this.movement;
     }
 
     #endregion
