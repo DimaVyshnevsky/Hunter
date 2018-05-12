@@ -64,6 +64,21 @@ public class AudioManager : MonoBehaviour
 
     #region Interface
 
+    public void Play(GameClips clip)
+    {
+        Play(clip.ToString());
+    }
+
+    public void Stop((GameClips clip)
+    {
+        Stop(clip.ToString());
+    }
+
+    public void Pause((GameClips clip, bool pause)
+    {
+        Pause(clip.ToString(), pause);
+    }
+
     public void Play(string name)
     {
         Sound temp = System.Array.Find(allSounds, clip => clip.name.Equals(name));

@@ -17,6 +17,7 @@ public class Explosion : MonoBehaviour
 
     private void OnEnable()
     {
+        AudioManager.Instance.Play(GameClips._ExplosionRocket);
         currentLight.intensity = startIntensity;
         DOVirtual.DelayedCall(3, () => gameObject.SetActive(false));
     }

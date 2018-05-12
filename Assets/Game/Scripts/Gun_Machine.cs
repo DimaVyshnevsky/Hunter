@@ -63,6 +63,7 @@ public class Gun_Machine : FireSystem
         if (!readyForNextShot)
             return;
 
+        AudioManager.Instance.Play(GameClips._GunMachine);
         readyForNextShot = false;
         GameObject bullet = PrepareNewBullet();
         MoverBullet obj = bullet.GetComponent<MoverBullet>();

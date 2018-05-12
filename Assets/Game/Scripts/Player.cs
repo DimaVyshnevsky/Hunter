@@ -132,6 +132,7 @@ public class Player : Base_Behavior
 
     public override void Die()
     {
+        AudioManager.Instance.Play(GameClips._Tank_Explosion);
         if (exposion && fire && fireLight)
         {
             fire.Stop();

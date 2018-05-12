@@ -53,6 +53,10 @@ public class Manager : MonoBehaviour
         if (instance == null)        
             instance = this;    
             DG.Tweening.DOTween.Init ( false, true, DG.Tweening.LogBehaviour.Verbose ).SetCapacity ( 200, 10 );
+        DOVirtual.DelayedCall(Random.Range(2, 7), () =>
+        {
+            AudioManager.Instance.Play(GameClips._Zombie);
+        }).SetLoops(-1, LoopType.Restart);
     }
 
     private void OnEnable()
@@ -145,6 +149,11 @@ public class Manager : MonoBehaviour
         //{
             //item.Invoke();
         //}
+    }
+
+    public void Exit()
+    {
+        Application.Quit();
     }
 
     #endregion
