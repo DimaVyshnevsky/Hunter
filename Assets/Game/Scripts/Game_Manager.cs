@@ -77,10 +77,11 @@ public class Game_Manager : MonoBehaviour
         if (enemyPrefs != null && enemyPrefs.Length > 0)
         {
             List<IPoolObj> list = Factory.Instance.CreatePool<Enemy>("Enemy", enemyPrefs, quantityEnemiesInScene);
-            foreach (var item in list)         
+            foreach (var item in list)
+            {
                 item.Init();
-            foreach (var item in listEnemy)
-                listEnemy.Add(item as Enemy);
+                listEnemy.Add(item.GetGameObject().GetComponent<Enemy>());
+            }     
             
             IEnumerator temp = GetGroupOfEnemies(quantityEnemiesInScene);
             StartCoroutine(temp);
