@@ -19,7 +19,7 @@ public class Launcher : FireSystem
 
     public override void Fire()
     {
-        AudioManager.Instance.Play(GameClips._Rocket_Fire);
+        Audio_Manager.Instance.Play(GameClips._Rocket_Fire);
 
         IPoolObj bullet = PrepareNewBullet<MoverMissile>();
 

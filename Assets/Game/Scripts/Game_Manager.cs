@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
-public class Manager : MonoBehaviour
+public class Game_Manager : MonoBehaviour
 {
     public enum GameState
     {
@@ -31,8 +31,8 @@ public class Manager : MonoBehaviour
     private List<Enemy> listEnemy = new List<Enemy>();
     private int quantityMissedExecution;
 
-    private static Manager instance;
-    public static Manager Instance
+    private static Game_Manager instance;
+    public static Game_Manager Instance
     {
         get
         {
@@ -57,7 +57,7 @@ public class Manager : MonoBehaviour
         DG.Tweening.DOTween.Init ( false, true, DG.Tweening.LogBehaviour.Verbose ).SetCapacity ( 200, 10 );
         DOVirtual.DelayedCall(Random.Range(7, 15), () =>
         {
-            AudioManager.Instance.Play("_Zombie_" + Random.Range(1, 4));
+            Audio_Manager.Instance.Play("_Zombie_" + Random.Range(1, 4));
         }).SetLoops(-1, LoopType.Restart);
     }
 

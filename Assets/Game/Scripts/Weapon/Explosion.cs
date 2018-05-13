@@ -30,7 +30,7 @@ public class Explosion : MonoBehaviour, IPoolObj
         if (!init)
             Init();
         gameObject.SetActive(true);
-        AudioManager.Instance.Play(GameClips._ExplosionRocket);
+        Audio_Manager.Instance.Play(GameClips._ExplosionRocket);
         DOVirtual.DelayedCall(3, () => Deactivate());
     }
 

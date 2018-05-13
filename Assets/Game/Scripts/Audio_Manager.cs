@@ -27,13 +27,13 @@ public enum GameClips
     _Zombie_3
 }
 
-public class AudioManager : MonoBehaviour
+public class Audio_Manager : MonoBehaviour
 {
     [SerializeField]
     private Sound[] allSounds;
 
-    private static AudioManager instance;
-    public static AudioManager Instance
+    private static Audio_Manager instance;
+    public static Audio_Manager Instance
     {
         get
         {
@@ -100,7 +100,9 @@ public class AudioManager : MonoBehaviour
             print("Current clip doesn't exists!");
             return;
         }
-        temp.source.Stop();
+
+        if (temp.source.isPlaying)
+            temp.source.Stop();
     }
 
     public void Pause(string name, bool pause)

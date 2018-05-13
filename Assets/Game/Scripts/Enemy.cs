@@ -50,10 +50,42 @@ public class Enemy : Hunter_Base, IPoolObj
         rig.detectCollisions = true;
         healthBar.gameObject.SetActive(true);
         base.Restart();
+    }  
+
+    public void Init()
+    {
+        agent = GetComponent<NavMeshAgent>();
+        anim = GetComponent<Animator>();
+        rig = GetComponent<Rigidbody>();
     }
 
+    public void Activate()
+    {
+        gameObject.SetActive(true);
+        SetState(State.hunting);
+    }
+
+    public void Deactivate()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public void ResetObj()
+    {
+        Restart();
+    }
+
+    public GameObject GetGameObject()
+    {
+        return gameObject;
+    }
+
+    #endregion
+
+    #region States
+
     public override void SetState(State state)
-    {        
+    {
         if (currentState == state)
             return;
         currentState = State._null;
@@ -79,38 +111,6 @@ public class Enemy : Hunter_Base, IPoolObj
 
         base.SetState(state);
     }
-
-    public void Init()
-    {
-        agent = GetComponent<NavMeshAgent>();
-        anim = GetComponent<Animator>();
-        rig = GetComponent<Rigidbody>();
-    }
-
-    public void Activate()
-    {
-        gameObject.SetActive(true);
-    }
-
-    public void Deactivate()
-    {
-        gameObject.SetActive(false);
-    }
-
-    public void ResetObj()
-    {
-        Restart();
-        SetState(State.hunting);
-    }
-
-    public GameObject GetGameObject()
-    {
-        return gameObject;
-    }
-
-    #endregion
-
-    #region States
 
     protected  void Attack()
     {

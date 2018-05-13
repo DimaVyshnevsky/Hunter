@@ -57,7 +57,6 @@ public class Player : Hunter_Base
         if (fireSystems != null && fireSystems.Length > 0)
             currentFireSystem = fireSystems[0];
         currentFireSystem.ActivateFireSystem(true);
-        Restart();
     }
 
     protected override void OnEnable()
@@ -75,7 +74,7 @@ public class Player : Hunter_Base
 
     private void Start()
     {
-        AudioManager.Instance.Play(GameClips._EngineIdle);
+        Restart();
     }
 
     private void Update()
@@ -115,12 +114,23 @@ public class Player : Hunter_Base
         fire.Stop();
         exposion.SetActive(false);
         fireLight.SetActive(false);
+        Audio_Manager.Instance.Play(GameClips._EngineIdle);
+        SetState(State.hunting);
         base.Restart();
     }
 
     #endregion
 
     #region States
+
+    public override void SetState(State state)
+    {
+        if (currentState == state)
+            return;
+        if (state == State.dead)
+            Die();
+        base.SetState(state);
+    }
 
     private void Attack(int type)
     {
@@ -139,7 +149,9 @@ public class Player : Hunter_Base
 
     public void Die()
     {
-        AudioManager.Instance.Play(GameClips._Tank_Explosion);
+        Audio_Manager.Instance.Pause(GameClips._EngineIdle, true);
+        Audio_Manager.Instance.Pause(GameClips._EngineDriving, true);
+        Audio_Manager.Instance.Play(GameClips._Tank_Explosion);
         if (exposion && fire && fireLight)
         {
             fire.Stop();
@@ -147,7 +159,6 @@ public class Player : Hunter_Base
             exposion.SetActive(true);
             fireLight.SetActive(true);
         }
-
         currentState = State.dead;
         if (DeadEvent != null)
             DeadEvent(gameObject.tag);
@@ -212,16 +223,16 @@ public class Player : Hunter_Base
 
         if (this.movement == movement)
             return;
-        print(movement);
+
         if (movement)
         {
-            AudioManager.Instance.Pause(GameClips._EngineIdle, true);
-            AudioManager.Instance.Play(GameClips._EngineDriving);
+            Audio_Manager.Instance.Pause(GameClips._EngineIdle, true);
+            Audio_Manager.Instance.Play(GameClips._EngineDriving);
         }
         else
         {
-            AudioManager.Instance.Pause(GameClips._EngineDriving, true);
-            AudioManager.Instance.Play(GameClips._EngineIdle);
+            Audio_Manager.Instance.Pause(GameClips._EngineDriving, true);
+            Audio_Manager.Instance.Play(GameClips._EngineIdle);
         }         
         this.movement = !this.movement;
     }

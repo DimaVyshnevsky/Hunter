@@ -12,7 +12,6 @@ public class Gun_Machine : FireSystem
     [SerializeField]
     private float radiusSeeker = 10f;
 
-    private IPoolObj currentBullet;
     private List<IPoolObj> enemyList;
     private bool readyForNextShot = true;
     private int step = 3;
@@ -51,8 +50,6 @@ public class Gun_Machine : FireSystem
         {
             if (hit.transform.tag.Equals("Enemy"))
             {
-                if(currentBullet != null)
-                    currentBullet.Deactivate();
                 hit.transform.GetComponent<Enemy>().MakeDamage(bulletPref.GetComponent<Damage>()._Damage);        
             }
         }
@@ -65,9 +62,9 @@ public class Gun_Machine : FireSystem
         if (!readyForNextShot)
             return;
 
-        AudioManager.Instance.Play(GameClips._GunMachine);
+        Audio_Manager.Instance.Play(GameClips._GunMachine);
         readyForNextShot = false;
-        currentBullet = PrepareNewBullet<MoverBullet>();
+        IPoolObj currentBullet = PrepareNewBullet<MoverBullet>();
         currentBullet.ResetObj();
         currentBullet.Activate();
         attack = true;     
