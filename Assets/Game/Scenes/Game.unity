@@ -7813,7 +7813,7 @@ MonoBehaviour:
   currentWeaponType: 0
   bulletPref: {fileID: 11400000, guid: 50cd6b4c96f60604db1b0412c4cdc9ca, type: 2}
   spawnPoint: {fileID: 0}
-  delay: 0.1
+  delay: 0.2
   quantityObjsInPool: 10
   damping: 11
   DistanceLock: 20

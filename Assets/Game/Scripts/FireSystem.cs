@@ -35,8 +35,8 @@ public class FireSystem: MonoBehaviour
 
     protected virtual void Awake()
     {
-        if (delay < 0.5f)
-            delay = 0.5f;
+        if (delay < 0.1f)
+            delay = 0.1f;
 
         if (spawnPoint == null)
             spawnPoint = transform;

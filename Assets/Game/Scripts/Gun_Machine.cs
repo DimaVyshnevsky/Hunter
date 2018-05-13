@@ -12,7 +12,7 @@ public class Gun_Machine : FireSystem
     [SerializeField]
     private float radiusSeeker = 10f;
 
-    private List<IPoolObj> enemyList;
+    private List<Enemy> enemyList = new List<Enemy>();
     private bool readyForNextShot = true;
     private int step = 3;
 
@@ -49,9 +49,7 @@ public class Gun_Machine : FireSystem
         if (Physics.Raycast(new Vector3(transform.position.x, 1, transform.position.z), fwd, out hit, DistanceLock))
         {
             if (hit.transform.tag.Equals("Enemy"))
-            {
                 hit.transform.GetComponent<Enemy>().MakeDamage(bulletPref.GetComponent<Damage>()._Damage);        
-            }
         }
 
         attack = false;
@@ -78,14 +76,24 @@ public class Gun_Machine : FireSystem
 
     private Transform FindEnemy()
     {
-        if (enemyList == null)
-            enemyList = Factory.Instance.GetList("Enemy");
+        if (enemyList == null || enemyList.Count <= 0)
+        {
+            List<IPoolObj> list = Factory.Instance.GetList("Enemy");
+            foreach (var item in list)
+                enemyList.Add(item.GetGameObject().GetComponent<Enemy>());
+        }
 
-        enemyList.Sort(delegate (IPoolObj obj_1, IPoolObj obj_2)
+        enemyList.Sort(delegate (Enemy obj_1, Enemy obj_2)
         { return Vector3.Distance(obj_1.GetGameObject().transform.position, Player.PlayerTransform.position)
             .CompareTo(Vector3.Distance(obj_2.GetGameObject().transform.position, Player.PlayerTransform.position)); });
-        if(Vector3.Distance(enemyList[0].GetGameObject().transform.position, transform.position) < radiusSeeker)
-            return enemyList[0].GetGameObject().transform;
-        return null;
+
+        for (int i = 0; i < enemyList.Count; i++)
+        {
+            if (enemyList[i].GetState() == Hunter_Base.State.dead)
+                continue;
+            if (Vector3.Distance(enemyList[0].GetGameObject().transform.position, transform.position) < radiusSeeker)
+                return enemyList[i].GetGameObject().transform;
+        }
+        return null;    
     } 
 }
