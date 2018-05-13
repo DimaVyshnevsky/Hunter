@@ -89,7 +89,7 @@ public class Gun_Machine : FireSystem
 
         for (int i = 0; i < enemyList.Count; i++)
         {
-            if (enemyList[i].GetState() == Hunter_Base.State.dead)
+            if (enemyList[i].GetState() == Hunter_Base.State.dead || !enemyList[i].gameObject.activeSelf)
                 continue;
             if (Vector3.Distance(enemyList[0].GetGameObject().transform.position, transform.position) < radiusSeeker)
                 return enemyList[i].GetGameObject().transform;
