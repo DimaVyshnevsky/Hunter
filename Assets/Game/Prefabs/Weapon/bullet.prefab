@@ -155,8 +155,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionEffect: {fileID: 0}
-  _damage: 20
-  _range: 0
+  damageEffect: 10
+  explosionRange: 0
 --- !u!122 &12200000
 Halo:
   m_ObjectHideFlags: 1
