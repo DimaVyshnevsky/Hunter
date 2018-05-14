@@ -81,8 +81,8 @@ public class Game_Manager : MonoBehaviour
             {
                 item.Init();
                 listEnemy.Add(item.GetGameObject().GetComponent<Enemy>());
-            }     
-            
+            }
+
             IEnumerator temp = GetGroupOfEnemies(quantityEnemiesInScene);
             StartCoroutine(temp);
         }
@@ -157,7 +157,7 @@ public class Game_Manager : MonoBehaviour
 
     private void GetEnemy()
     {
-        IPoolObj enemy = Factory.Instance.GetObject<Enemy>("Enemy");
+        Enemy enemy = Factory.Instance.GetObject<Enemy>("Enemy");
         if (enemy != null)
         {
             enemy.GetGameObject().transform.position = spawnPoints[Random.Range(0, spawnPoints.Length)].position;

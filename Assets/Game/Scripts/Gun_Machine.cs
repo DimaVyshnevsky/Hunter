@@ -12,12 +12,18 @@ public class Gun_Machine : FireSystem
     [SerializeField]
     private float radiusSeeker = 10f;
 
-    private List<Enemy> enemyList = new List<Enemy>();
+    private List<Enemy> enemyList;
     private bool readyForNextShot = true;
     private int step = 3;
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
+    }
+
+    protected override void Init()
+    {
+        base.Init();
         List<IPoolObj> list = Factory.Instance.CreatePool<MoverBullet>(bulletPref.GetType().ToString(), bulletPref.gameObject, quantityObjsInPool);
         foreach (var item in list)
             item.Init();
@@ -49,7 +55,7 @@ public class Gun_Machine : FireSystem
         if (Physics.Raycast(new Vector3(transform.position.x, 1, transform.position.z), fwd, out hit, DistanceLock))
         {
             if (hit.transform.tag.Equals("Enemy"))
-                hit.transform.GetComponent<Enemy>().MakeDamage(bulletPref.GetComponent<Damage>()._Damage);        
+                hit.transform.GetComponent<Enemy>().MakeDamage(bulletPref.GetComponent<Damage>().DamageEffect);        
         }
 
         attack = false;
@@ -78,9 +84,12 @@ public class Gun_Machine : FireSystem
     {
         if (enemyList == null || enemyList.Count <= 0)
         {
-            List<IPoolObj> list = Factory.Instance.GetList("Enemy");
+            enemyList = new List<Enemy>();
+            List<IPoolObj>list = Factory.Instance.GetList("Enemy");
             foreach (var item in list)
-                enemyList.Add(item.GetGameObject().GetComponent<Enemy>());
+            {
+                enemyList.Add(item as Enemy);
+            }
         }
 
         enemyList.Sort(delegate (Enemy obj_1, Enemy obj_2)

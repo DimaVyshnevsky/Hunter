@@ -7,8 +7,14 @@ public class Launcher : FireSystem
     [SerializeField]
     private GameObject explosionEffectPref;
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
+    }
+
+    protected override void Init()
+    {
+        base.Init();
         List<IPoolObj> list = Factory.Instance.CreatePool<MoverMissile>(bulletPref.GetType().ToString(), bulletPref.gameObject, quantityObjsInPool);
         foreach (var item in list)
             item.Init();

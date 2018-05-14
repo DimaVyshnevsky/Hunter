@@ -33,7 +33,12 @@ public class FireSystem: MonoBehaviour
         }
     }
 
-    protected virtual void Awake()
+    protected virtual void Start()
+    {
+        Init();
+    }
+
+    protected virtual void Init()
     {
         if (delay < 0.1f)
             delay = 0.1f;
@@ -52,9 +57,9 @@ public class FireSystem: MonoBehaviour
         this.activate = activate;
     }
 
-    protected virtual IPoolObj PrepareNewBullet<T>() where T: IPoolObj
+    protected virtual IPoolObj PrepareNewBullet<T>() where T: class, IPoolObj
     {
-        IPoolObj temp = Factory.Instance.GetObject<T>(bulletPref.GetType().ToString());
+        T temp = Factory.Instance.GetObject<T>(bulletPref.GetType().ToString());
         if (temp == null)
         {
             print("no bullet!");
