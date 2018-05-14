@@ -216,10 +216,10 @@ public class Player : Hunter_Base
     {
         bool movement = false;
 
-        if (input_1 > 0 || input_2 > 0)
-            movement = true;
-        else
+        if (input_1 == 0 && input_2 == 0)
             movement = false;
+        else
+            movement = true;
 
         if (this.movement == movement)
             return;
