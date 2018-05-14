@@ -76,9 +76,9 @@ public class Hunter_Base : MonoBehaviour
     {
         //расчет урона от близости взрыва
         float distance = Vector3.Distance(damage.transform.position, transform.position);
-        if (distance < damage._Range)
+        if (distance < damage.ExplosionRange)
         {
-            float d = (1f - (1f / damage._Range * distance)) * damage._Damage;
+            float d = (1f - (1f / damage.ExplosionRange * distance)) * damage.DamageEffect;
             MakeDamage(d);
         }
     }
