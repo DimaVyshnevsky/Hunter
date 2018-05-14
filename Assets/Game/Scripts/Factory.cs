@@ -11,7 +11,6 @@ public interface IPoolObj
     GameObject GetGameObject();
 }
 
-
 public class Factory : MonoBehaviour
 {
 
@@ -116,7 +115,7 @@ public class Factory : MonoBehaviour
         return CreatePool<T>(key, new GameObject[1] { pref }, quantity);
     }
 
-    public IPoolObj GetObject<T>(string key) where T : IPoolObj
+    public T GetObject<T>(string key) where T : class, IPoolObj
     {
         List<IPoolObj> list;
 
@@ -134,7 +133,7 @@ public class Factory : MonoBehaviour
             temp = CreateObject<T>(array[Random.Range(0, array.Length)]);
             list.Add(temp);
         }
-        return temp;
+        return temp as T;
     }
 
     public List<IPoolObj> GetList(string listName)
@@ -142,6 +141,7 @@ public class Factory : MonoBehaviour
         List<IPoolObj> list;
         return newPool.TryGetValue(listName, out list) ? list : null;       
     }
+
     #endregion
 
     private IPoolObj CreateObject<T>(GameObject pref) where T : IPoolObj

@@ -6,24 +6,24 @@ public class Damage : MonoBehaviour
     [SerializeField]
     protected GameObject explosionEffect;
     [SerializeField]
-    protected int _damage = 20;
+    protected int damageEffect = 20;
     [SerializeField]
     [Range(1, 20)]
-    protected float _range;
+    protected float explosionRange;
    
-    public float _Range
+    public float ExplosionRange
     {
         get
         {
-            return _range;
+            return explosionRange;
         }
     }
 
-    public float _Damage
+    public float DamageEffect
     {
         get
         {
-            return _damage;
+            return damageEffect;
         }
     }
 
@@ -33,7 +33,7 @@ public class Damage : MonoBehaviour
     {
         if (explosionEffect)
         {
-            IPoolObj obj = Factory.Instance.GetObject<Explosion>(explosionEffect.name);
+            Explosion obj = Factory.Instance.GetObject<Explosion>(explosionEffect.name);
             obj.GetGameObject().transform.position = transform.position;
             obj.Activate();
         }
