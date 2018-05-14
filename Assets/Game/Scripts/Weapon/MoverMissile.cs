@@ -14,21 +14,13 @@ public class MoverMissile : WeaponBase, IPoolObj
     private bool Seeker;
     [Header("-----Rocket_Parts-----")]
     [SerializeField]
-    private ParticleSystem effectsParticle;
-    [SerializeField]
     private GameObject lightEffect;
     [SerializeField]
     private GameObject rocketRenderer;
 
     private Tween tweenTimer;
     private Rigidbody rig;
-    private List<IPoolObj> enemyList;
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if(!other.tag.Equals("Player"))
-            Explosion();
-    }
+    private List<Enemy> enemyList;
 
     private void FixedUpdate()
     {
@@ -47,17 +39,18 @@ public class MoverMissile : WeaponBase, IPoolObj
         if (!fire)
             return;
 
+        foreach (var item in enemyList)
+        {
+            if (Vector3.Distance(new Vector3(item.GetGameObject().transform.position.x, transform.position.y, item.GetGameObject().transform.position.z), transform.position) < 1f && 
+                item.GetState() != Hunter_Base.State.dead)
+                Explosion();
+        }
+
         if (target)
         {
-            if (Vector3.Distance(transform.position, target.position) < 0.2f)
-            {
-                Explosion();
-                return;
-            }
-
-            Quaternion rotation = Quaternion.LookRotation(target.position - transform.position);
+            Quaternion rotation = Quaternion.LookRotation(new Vector3(target.position.x, transform.position.y, target.position.z) - transform.position, Vector3.up);
             transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * Damping);
-            Vector3 dir = (target.position - transform.position).normalized;
+            Vector3 dir = (new Vector3(target.position.x, transform.position.y, target.position.z) - transform.position).normalized;
             float direction = Vector3.Dot(dir, transform.forward);
 
             if (direction < TargetLockDirection)
@@ -91,6 +84,13 @@ public class MoverMissile : WeaponBase, IPoolObj
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!other.tag.Equals("Player"))
+            Explosion();
+        print("Trigger Enter");
+    }
+
     #region Interface
 
     public  void Activate()
@@ -98,13 +98,19 @@ public class MoverMissile : WeaponBase, IPoolObj
         if (!init)
             Init();
 
-        if (enemyList == null)
-            enemyList = Factory.Instance.GetList("Enemy");
-        effectsParticle.Stop();
-        effectsParticle.Play();
-        lightEffect.SetActive(true);
+        if (enemyList == null || enemyList.Count <= 0)
+        {
+            enemyList = new List<Enemy>();
+            List<IPoolObj> list = Factory.Instance.GetList("Enemy");
+            foreach (var item in list)
+            {
+                enemyList.Add(item as Enemy);
+            }
+        }
 
+        lightEffect.SetActive(true);
         gameObject.SetActive(true);
+
         tweenTimer = DOVirtual.DelayedCall(LifeTime, () =>
         {
             Explosion();
@@ -121,11 +127,9 @@ public class MoverMissile : WeaponBase, IPoolObj
     public void ResetObj()
     {
         if (!init)
-            Init();
-        fire = false;
+            Init();        
         target = null;
         rig.detectCollisions = true;
-        rig.isKinematic = false;
         rocketRenderer.SetActive(true);
         if (rig.velocity != Vector3.zero)
             rig.AddForce(-rig.velocity, ForceMode.VelocityChange);
@@ -152,15 +156,14 @@ public class MoverMissile : WeaponBase, IPoolObj
 
     private void Explosion()
     {
+        fire = false;
+
         if (tweenTimer != null && tweenTimer.IsActive())
             tweenTimer.Kill();
 
-        ResetObj();
-        rocketRenderer.SetActive(false);
         rig.detectCollisions = false;
-        rig.isKinematic = true;
+        rocketRenderer.SetActive(false);
         lightEffect.SetActive(false);
-        effectsParticle.Stop();
 
         DOVirtual.DelayedCall(3, ()=>
         {
