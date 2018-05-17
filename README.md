@@ -1,6 +1,6 @@
 # Hunter
 Hunter
 
-1. В архиве Hunter находится исполняемый файл;
-2. Версия Unity 2017.3.1f1;
-3. В папке Game/Scripts/Helper находятся классы взятые из проэкта Tanks;
+1. The Hunter archive contains an executable file;
+2. Unity version 2017.3.1f1;
+3. In the folder Game/Scripts/Helper are classes taken from the project Tanks;
